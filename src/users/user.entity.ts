@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserStatus } from "./user-status.enum";
 import { Error } from "../error/errot.entity";
 import { Member } from "../member/member.entity";
@@ -6,6 +6,8 @@ import { Comment } from "../comment/comment.entity";
 import { Project } from "../project/project.entity";
 import { Task } from "../task/tasks.entity";
 import { Notification } from "../notification/notification.entity";
+import { RoomChat } from "../room-chat/room-chat.entity";
+import { Message } from "../chat/chat.entiry";
 @Entity()
 export class User{
 
@@ -13,15 +15,19 @@ export class User{
     id: string;
 
     @Column()
-    username: string;
+    email: string;
     
     @Column()
     password: string;
 
-    @Column()
-    role:number;
+    @Column({type: 'enum', enum:['backend', 'fontend', 'fullstack', 'tester', 'devops', 'manager', 'admin', 'guest'], default:'fullstack'})
+    role:'backend' | 'fontend' | 'fullstack' |'tester' | 'devops' | 'manager' | 'admin'| 'guest';
 
-    @Column()
+    @Column({
+        type: 'enum',
+        enum: UserStatus,
+        default: UserStatus.ACTIVE
+    })
     status: UserStatus;
 
 // information basic
@@ -66,4 +72,18 @@ export class User{
     //notification
     @OneToMany(()=> Notification, (notification) => notification.user)
     notifications: Notification[];
+
+    //room chat
+    @ManyToMany(()=> RoomChat, (roomChat) => roomChat.participants)
+    participatingRooms: RoomChat[];
+
+    @ManyToMany(()=> RoomChat, (roomChat) => roomChat.admins)
+    adminRooms: RoomChat[];
+
+    @OneToMany(()=> RoomChat, (roomChat) => roomChat.userCreate)
+    createdRooms: RoomChat[];
+
+    // chat
+    @OneToMany(()=> Message, (message) => message.user)
+    messages: Message[];
 }

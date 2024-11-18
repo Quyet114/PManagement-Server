@@ -12,6 +12,10 @@ import { MemberModule } from './member/member.module';
 import { ErrorModule } from './error/error.module';
 import { NotificationModule } from './notification/notification.module';
 import { ProjectModule } from './project/project.module';
+import { ChatModule } from './chat/chat.module';
+import { RoomChatController } from './room-chat/room-chat.controller';
+import { RoomChatService } from './room-chat/room-chat.service';
+import { RoomChatModule } from './room-chat/room-chat.module';
 @Module({
   imports: [
     TasksModule,
@@ -30,9 +34,11 @@ import { ProjectModule } from './project/project.module';
     MemberModule,
     ErrorModule,
     NotificationModule,
-    ProjectModule
+    ProjectModule,
+    ChatModule,
+    RoomChatModule
   ],
-  controllers: [AppController, MemberController],
-  providers: [AppService, MemberService],
+  controllers: [AppController, MemberController, RoomChatController],
+  providers: [AppService, MemberService, RoomChatService],
 })
 export class AppModule {}

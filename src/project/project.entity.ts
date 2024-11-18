@@ -6,11 +6,14 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import {User} from '../users/user.entity';
 import {Member} from '../member/member.entity';
 import {Task} from '../task/tasks.entity';
 import { Notification } from '../notification/notification.entity';
+import { RoomChat } from '../room-chat/room-chat.entity';
+import { ProjectStatus } from './project-status.enum';
 @Entity()
 export class Project {
   @PrimaryGeneratedColumn('uuid')
@@ -25,9 +28,12 @@ export class Project {
   @Column({nullable:true})
   avatar: string;
 
-  @Column({nullable:true})
-  status: string;
-  enum: ['active', 'inactive'];
+  @Column({
+    type: 'enum',
+    enum: ProjectStatus,
+    default: ProjectStatus.ACTIVE,
+  })
+  status: ProjectStatus;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -58,5 +64,8 @@ export class Project {
   @OneToMany(()=> Notification, (notification) => notification.project)
   notifications: Notification[];
 
+  // RoomChat
+  @OneToOne(()=> RoomChat, (roomChat) => roomChat.project)
+  roomChat: RoomChat;
 
 }
