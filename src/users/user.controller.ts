@@ -1,49 +1,59 @@
 
-import { Controller,Get, Post, Put, Param, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body, NotFoundException, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
+
+
+// dto
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { GetUserStatusDto } from './dto/get-user-filter-dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
+// guard
+import { RoleGuard } from 'src/guard/role.guard';
+import { Roles } from 'src/guard/role-decorator';
+import { AuthGuard } from 'src/guard/auth.guard';
+
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService){}
+    constructor(private readonly userService: UserService) { }
 
-    @Post()
-    async createUser(@Body() createUserDto:CreateUserDto):Promise<User>{
+    // Create a new user
+    @Post('create')
+    @UseGuards(RoleGuard)
+    @Roles('admin')
+    async createUser(
+        @Body() createUserDto: CreateUserDto
+    ): Promise<User> {
         return await this.userService.createUser(createUserDto);
     }
 
-    @Get()
-    async findAllUsers(): Promise<User[]>{
-        return await this.userService.findAllUser();
+    // Update user
+    @Post('update/:id')
+    @UseGuards(AuthGuard)
+    async updateUser(
+        @Param('id') id: string,
+        @Body() updateUserDto: UpdateUserDto
+    ): Promise<User> {
+        return await this.userService.updateUser(id, updateUserDto);
     }
 
-    @Get(':id')
-    async getUser(@Param('id') id:string ):Promise<User>{
-        return await this.userService.getUser(id);
+    // Update user status
+    @Put('update-status/:id')
+    @UseGuards(AuthGuard)
+    async updateStatus(
+        @Param('id') id: string,
+        @Body() updateStatusDto: UpdateUserStatusDto
+    ): Promise<User> {
+        return await this.userService.updateUserStatus(id, updateStatusDto);
     }
-    @Get('search')
-    async getUsers( @Body() filterDto: GetUserStatusDto): Promise<User[]>{
-        return await this.userService.getUsers(filterDto);
-    }
-    @Put(':id')
-    async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto):Promise<User>{
-        const updateUser = await this.userService.updateUser(id,updateUserDto);
-        if(!updateUser){
-            throw new NotFoundException(`User with ID "${id}" not found`);
 
-        }
-        return updateUser;
+    // Find user by name
+    @Get('find/:name')
+    @UseGuards(AuthGuard)
+    async findUserByName(
+        @Param('name') name: string
+    ): Promise<User[]> {
+        return await this.userService.findUserByName(name);
     }
-    @Put(':id/status')
-    async updateUserStatus(@Param('id') id:string, @Body() updateUserStatus: UpdateUserStatusDto):Promise<User>{
-        const updateUser = await this.userService.updateUserStatus(id,updateUserStatus);
-        if(!updateUser){
-            throw new NotFoundException(`User with ID "${id}" not found`);
-        }
-        return updateUser;
-    }
-}
+}   

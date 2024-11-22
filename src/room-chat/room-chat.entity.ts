@@ -12,11 +12,11 @@ import {
 
 import { User } from '../users/user.entity';
 import { Project } from 'src/project/project.entity';
-import { Message } from 'src/chat/chat.entiry';
-
+import { Message } from 'src/chat/chat.entity';
+import { Member } from 'src/member/member.entity';
 @Entity()
 export class RoomChat {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column()
@@ -34,9 +34,9 @@ export class RoomChat {
   @JoinTable() 
   admins: User[]; 
 
-  @ManyToMany(() => User, (user) => user.participatingRooms)
-  @JoinTable() 
-  participants: User[]; 
+  // @ManyToMany(() => User, (user) => user.participatingRooms)
+  // @JoinTable() 
+  // participants: User[]; 
 
   // project
   @OneToOne(() => Project, (project) => project.roomChat, { nullable: true })
@@ -46,4 +46,7 @@ export class RoomChat {
   @OneToMany(() => Message, (message) => message.roomChat)
   messages: Message[];
 
+  // member
+  @OneToMany(() => Member, (member) => member.roomChat)
+  members: Member[];  
 }

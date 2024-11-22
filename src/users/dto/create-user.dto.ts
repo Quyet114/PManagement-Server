@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto {
     @IsString()
@@ -8,4 +8,8 @@ export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
     password: string;
+
+    @IsEnum(['backend', 'fontend', 'fullstack', 'tester', 'devops', 'manager', 'admin', 'guest'])
+    @IsOptional()
+    role?: string;
 }

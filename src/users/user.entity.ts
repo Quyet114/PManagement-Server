@@ -7,7 +7,26 @@ import { Project } from "../project/project.entity";
 import { Task } from "../task/tasks.entity";
 import { Notification } from "../notification/notification.entity";
 import { RoomChat } from "../room-chat/room-chat.entity";
-import { Message } from "../chat/chat.entiry";
+import { Message } from "../chat/chat.entity";
+import e from "express";
+
+export enum Role{
+    BACKEND = 'backend',
+    FRONTEND = 'fontend',
+    FULLSTACK = 'fullstack',
+    TESTER = 'tester',
+    DEVOPS = 'devops',
+    MANAGER = 'manager',
+    ADMIN = 'admin',
+    GUEST = 'guest'
+}
+
+export enum Gender{
+    Male = 'male',
+    Femail = 'femail',
+    Other = 'other'
+}
+
 @Entity()
 export class User{
 
@@ -20,8 +39,12 @@ export class User{
     @Column()
     password: string;
 
-    @Column({type: 'enum', enum:['backend', 'fontend', 'fullstack', 'tester', 'devops', 'manager', 'admin', 'guest'], default:'fullstack'})
-    role:'backend' | 'fontend' | 'fullstack' |'tester' | 'devops' | 'manager' | 'admin'| 'guest';
+    @Column({
+        type: 'enum', 
+        enum: Role, 
+        default: Role.GUEST
+    })
+    role: string;
 
     @Column({
         type: 'enum',
@@ -40,7 +63,12 @@ export class User{
     @Column({nullable:true})
     phone:string;
 
-    @Column({nullable:true})
+    @Column({
+        nullable:true,
+        type: 'enum',
+        enum:Gender,
+        default:Gender.Other
+    })
     gender:string;
 
     @Column({nullable:true})
@@ -66,16 +94,16 @@ export class User{
     projects: Project[];
 
     // task
-    @OneToMany(()=> Task, (task) => task.assignTo)
-    tasks: Task[];
+    // @OneToMany(()=> Task, (task) => task.assignTo)
+    // tasks: Task[];
 
     //notification
     @OneToMany(()=> Notification, (notification) => notification.user)
     notifications: Notification[];
 
     //room chat
-    @ManyToMany(()=> RoomChat, (roomChat) => roomChat.participants)
-    participatingRooms: RoomChat[];
+    // @ManyToMany(()=> RoomChat, (roomChat) => roomChat.participants)
+    // participatingRooms: RoomChat[];
 
     @ManyToMany(()=> RoomChat, (roomChat) => roomChat.admins)
     adminRooms: RoomChat[];

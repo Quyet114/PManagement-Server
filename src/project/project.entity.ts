@@ -35,7 +35,7 @@ export class Project {
   })
   status: ProjectStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
   createdAt: Date;
 
   @UpdateDateColumn()
